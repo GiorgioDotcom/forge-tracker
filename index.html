@@ -64,7 +64,7 @@
   /* NAV */
   .nav {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     width: 100%;
@@ -639,6 +639,67 @@
     text-transform: uppercase;
   }
 
+  /* PROGRESS */
+  .prog-tab {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text3);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .prog-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  .prog-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .prog-card.up { border-left: 3px solid var(--success); }
+  .prog-card.same { border-left: 3px solid var(--text3); }
+  .prog-card.new { border-left: 3px solid var(--accent2); }
+
+  .prog-info { flex: 1; min-width: 0; }
+
+  .prog-name {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+
+  .prog-values {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .prog-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    min-width: 60px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .prog-badge.up { color: var(--success); }
+  .prog-badge.same { color: var(--text3); }
+  .prog-badge.new { color: var(--accent2); }
+
   /* TOAST */
   .toast {
     position: fixed;
@@ -738,11 +799,12 @@
   </div>
 </div>
 
-<div class="nav">
-  <button class="nav-btn active" onclick="showPage('workout')">Allenamento</button>
-  <button class="nav-btn" onclick="showPage('checklist')">Checklist</button>
-  <button class="nav-btn" onclick="showPage('history')">Storico</button>
-  <button class="nav-btn" onclick="showPage('settings')">Scheda</button>
+<div class="nav" id="main-nav">
+  <button class="nav-btn active" onclick="showPage('workout', this)">Training</button>
+  <button class="nav-btn" onclick="showPage('checklist', this)">Log</button>
+  <button class="nav-btn" onclick="showPage('progress', this)">Progress</button>
+  <button class="nav-btn" onclick="showPage('history', this)">Storico</button>
+  <button class="nav-btn" onclick="showPage('settings', this)">Scheda</button>
 </div>
 
 <!-- WORKOUT PAGE -->
@@ -796,6 +858,17 @@
   <div class="section-title">Storico</div>
   <div class="section-sub">I tuoi allenamenti salvati</div>
   <div id="history-list"></div>
+</div>
+
+<!-- PROGRESS PAGE -->
+<div class="page" id="page-progress">
+  <div class="section-title">Progressi</div>
+  <div class="section-sub">Confronto primo vs ultimo allenamento</div>
+  <div id="progress-tabs" style="display:flex;gap:8px;margin-bottom:20px;">
+    <button class="prog-tab active" id="ptab-A" onclick="selectProgTab('A')">Full Body A</button>
+    <button class="prog-tab" id="ptab-B" onclick="selectProgTab('B')">Full Body B</button>
+  </div>
+  <div id="progress-list"></div>
 </div>
 
 <!-- SETTINGS PAGE -->
@@ -898,15 +971,17 @@ function save() {
 }
 
 // ============ NAVIGATION ============
-function showPage(name) {
+function showPage(name, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  event.target.classList.add('active');
+  if (btn) btn.classList.add('active');
+  else if (event && event.target) event.target.classList.add('active');
 
   if (name === 'history') renderHistory();
   if (name === 'checklist') renderChecklist();
   if (name === 'settings') renderSettings();
+  if (name === 'progress') renderProgress('A');
 }
 
 // ============ WORKOUT PAGE ============
@@ -1020,9 +1095,13 @@ function saveWorkout() {
     dateRaw: new Date().toISOString(),
     exercises: exercises.map(ex => {
       const d = state.currentSets[ex.id] || {};
+      const kgValues = (d.sets || []).map(s => parseFloat(s.kg)).filter(v => !isNaN(v) && v > 0);
+      const maxKg = kgValues.length > 0 ? Math.max(...kgValues) : null;
       return {
         name: ex.name,
+        exId: ex.id,
         sets: (d.sets || []).map(s => `${s.kg ? s.kg+'kg' : '—'} × ${s.reps || ex.reps}`).join(' | '),
+        maxKg: maxKg,
         note: d.note || ''
       };
     })
@@ -1217,6 +1296,69 @@ function resetAll() {
     localStorage.removeItem('forge_history');
     location.reload();
   }
+}
+
+// ============ PROGRESS ============
+let currentProgTab = 'A';
+
+function selectProgTab(type) {
+  currentProgTab = type;
+  document.getElementById('ptab-A').classList.toggle('active', type === 'A');
+  document.getElementById('ptab-B').classList.toggle('active', type === 'B');
+  renderProgress(type);
+}
+
+function renderProgress(type) {
+  currentProgTab = type;
+  const list = document.getElementById('progress-list');
+  list.innerHTML = '';
+
+  const exercises = state.exercises[type];
+  const workouts = state.history.filter(h => h.type === type).sort((a,b) => new Date(a.dateRaw) - new Date(b.dateRaw));
+
+  if (workouts.length === 0) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📈</div><div class="empty-text">Nessun allenamento salvato per questo workout.<br>Completa almeno una sessione!</div></div>';
+    return;
+  }
+
+  exercises.forEach(ex => {
+    // Get all recorded max kg for this exercise across history
+    const records = workouts.map(w => {
+      const found = (w.exercises || []).find(e => e.exId === ex.id || e.name === ex.name);
+      return found ? { date: w.date, maxKg: found.maxKg } : null;
+    }).filter(r => r && r.maxKg !== null && r.maxKg !== undefined);
+
+    const card = document.createElement('div');
+
+    if (records.length === 0) {
+      card.className = 'prog-card new';
+      card.innerHTML = `
+        <div class="prog-info">
+          <div class="prog-name">${ex.name}</div>
+          <div class="prog-values">Nessun peso registrato</div>
+        </div>
+        <div class="prog-badge new">—</div>`;
+    } else {
+      const first = records[0];
+      const last = records[records.length - 1];
+      const diff = last.maxKg - first.maxKg;
+      const isUp = diff > 0;
+      const isSame = diff === 0;
+      const cls = isUp ? 'up' : 'same';
+      const diffStr = isUp ? `+${diff}kg` : (isSame ? '→' : `${diff}kg`);
+      const allDates = records.map(r => `${r.date}: ${r.maxKg}kg`).join(' · ');
+
+      card.className = `prog-card ${cls}`;
+      card.innerHTML = `
+        <div class="prog-info">
+          <div class="prog-name">${ex.name}</div>
+          <div class="prog-values">${first.maxKg}kg → ${last.maxKg}kg · ${records.length} sessioni</div>
+        </div>
+        <div class="prog-badge ${cls}">${diffStr}</div>`;
+    }
+
+    list.appendChild(card);
+  });
 }
 
 // ============ TOAST ============
