@@ -639,6 +639,261 @@
     text-transform: uppercase;
   }
 
+  /* MASCOT */
+  .mascot-box {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    padding: 14px 14px 16px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.1s;
+    overflow: hidden;
+  }
+  .mascot-box.shake { animation: mbox-shake 0.35s ease-in-out; }
+  @keyframes mbox-shake {
+    0%,100%{ transform:translateX(0) scaleX(1); }
+    20%    { transform:translateX(-5px) scaleX(1.02); }
+    40%    { transform:translateX(5px)  scaleX(0.98); }
+    60%    { transform:translateX(-4px) scaleX(1.01); }
+    80%    { transform:translateX(4px)  scaleX(0.99); }
+  }
+  .mascot-box.squish { animation: mbox-squish 0.4s ease-in-out; }
+  @keyframes mbox-squish {
+    0%,100%{ transform:scaleY(1)    scaleX(1); }
+    40%    { transform:scaleY(0.93) scaleX(1.05); }
+  }
+
+  .mascot-stage-label {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:11px; font-weight:700; letter-spacing:2px;
+    text-transform:uppercase; color:var(--text3);
+    margin-bottom:6px; text-align:center;
+  }
+  .mascot-xp-badge {
+    position:absolute; top:10px; right:10px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:20px; font-family:'Barlow Condensed',sans-serif;
+    font-size:12px; font-weight:700; color:var(--accent);
+    padding:3px 10px; letter-spacing:1px; z-index:3;
+  }
+
+  /* ── scene ── */
+  .mascot-scene {
+    position:relative; height:170px; overflow:hidden;
+    cursor:pointer; perspective:600px;
+  }
+  .mascot-scene::before {          /* floor line */
+    content:''; position:absolute;
+    bottom:22px; left:0; right:0; height:2px;
+    background:var(--border); border-radius:2px;
+  }
+
+  /* ground shadow */
+  .m-shadow {
+    position:absolute; bottom:16px; left:50%;
+    transform:translateX(-50%);
+    width:56px; height:12px; border-radius:50%;
+    background:rgba(0,0,0,0.35);
+    transition:width .15s, opacity .15s;
+  }
+
+  /* ── character root ── */
+  .m-char {
+    position:absolute; bottom:22px; left:50%;
+    transform-origin:bottom center;
+    transform:translateX(-50%);
+    width:60px;
+    /* sub-pixel smoothing */
+    will-change:transform;
+  }
+
+  /* body */
+  .m-torso {
+    position:relative; width:44px; height:48px;
+    margin:0 auto;
+    border-radius:10px 10px 8px 8px;
+    background:linear-gradient(160deg,#ff9f43 0%,#e07820 100%);
+    box-shadow:inset -4px -4px 0 rgba(0,0,0,0.15),
+               inset 2px 2px 0 rgba(255,255,255,0.1);
+    transform-origin:top center;
+  }
+  /* shirt number */
+  .m-torso::after {
+    content:'G'; position:absolute;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:18px; font-weight:900; color:rgba(0,0,0,0.2);
+  }
+
+  /* head */
+  .m-head {
+    position:relative; width:46px; height:46px;
+    margin:0 auto 2px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#fdd89a,#f0a050);
+    box-shadow:inset -4px -4px 0 rgba(0,0,0,0.1),
+               inset 2px 2px 0 rgba(255,255,255,0.15);
+    transform-origin:bottom center;
+  }
+  .m-eye { position:absolute; width:8px; height:9px; border-radius:50% 50% 45% 45%; background:#222; top:38%; }
+  .m-eye.l { left:26%; } .m-eye.r { right:26%; }
+  .m-eye::after { content:''; position:absolute; width:3px; height:3px; border-radius:50%; background:white; top:1px; left:1px; }
+  .m-mouth { position:absolute; bottom:22%; left:50%; transform:translateX(-50%); width:14px; height:7px; border-bottom:2.5px solid #333; border-left:2px solid #333; border-right:2px solid #333; border-radius:0 0 8px 8px; }
+  /* hair */
+  .m-hair {
+    position:absolute; top:-6px; left:50%; transform:translateX(-50%);
+    width:48px; height:16px;
+    background:radial-gradient(ellipse at 50% 80%,#7a4010,#5a2a00);
+    border-radius:50% 50% 0 0;
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.2);
+  }
+
+  /* ── limbs ── */
+  /* arms */
+  .m-arm-wrap { position:absolute; top:4px; width:14px; height:38px; }
+  .m-arm-wrap.l { left:-15px; transform-origin:top center; }
+  .m-arm-wrap.r { right:-15px; transform-origin:top center; }
+  .m-upper-arm {
+    width:14px; height:22px; border-radius:7px;
+    background:linear-gradient(160deg,#fdd89a,#f0a050);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.1);
+  }
+  .m-forearm-wrap { transform-origin:top center; margin-top:1px; }
+  .m-forearm {
+    width:13px; height:19px; border-radius:6px;
+    background:linear-gradient(160deg,#fdd89a,#f0a050);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.1);
+  }
+  .m-hand {
+    width:13px; height:13px; border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#fdd89a,#e09040);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.1);
+    margin-top:1px;
+  }
+
+  /* legs */
+  .m-leg-wrap { position:absolute; bottom:0; width:18px; height:56px; }
+  .m-leg-wrap.l { left:3px; transform-origin:top center; }
+  .m-leg-wrap.r { right:3px; transform-origin:top center; }
+  .m-thigh {
+    width:18px; height:26px; border-radius:8px 8px 5px 5px;
+    background:linear-gradient(160deg,#3a3a5a,#22223a);
+    box-shadow:inset -3px -3px 0 rgba(0,0,0,0.2);
+  }
+  .m-shin-wrap { transform-origin:top center; }
+  .m-shin {
+    width:16px; height:22px; border-radius:5px;
+    background:linear-gradient(160deg,#3a3a5a,#22223a);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.2);
+    margin:1px auto 0;
+  }
+  .m-foot {
+    width:20px; height:10px; border-radius:4px 8px 5px 3px;
+    background:linear-gradient(160deg,#e8ff47,#b8cc20);
+    box-shadow:inset -2px -2px 0 rgba(0,0,0,0.15);
+    margin:1px 0 0 -2px;
+  }
+
+  /* ── ANIMATION KEYFRAMES ── */
+
+  /* idle: gentle breathe + head bob */
+  @keyframes idle-torso  { 0%,100%{transform:scaleY(1) scaleX(1)}  50%{transform:scaleY(1.03) scaleX(0.98)} }
+  @keyframes idle-head   { 0%,100%{transform:translateY(0)}         50%{transform:translateY(-2px)} }
+  @keyframes idle-armL   { 0%,100%{transform:rotate(8deg)}          50%{transform:rotate(14deg)} }
+  @keyframes idle-armR   { 0%,100%{transform:rotate(-8deg)}         50%{transform:rotate(-14deg)} }
+  @keyframes idle-legL   { 0%,100%{transform:rotate(2deg)}          50%{transform:rotate(-2deg)} }
+  @keyframes idle-legR   { 0%,100%{transform:rotate(-2deg)}         50%{transform:rotate(2deg)} }
+
+  /* run: proper run cycle */
+  @keyframes run-torso   { 0%,100%{transform:rotate(-4deg) translateY(0)}  50%{transform:rotate(4deg) translateY(-3px)} }
+  @keyframes run-head    { 0%,100%{transform:rotate(3deg)}                  50%{transform:rotate(-3deg)} }
+  @keyframes run-armLf   { 0%,50%,100%{transform:rotate(-55deg)}  25%{transform:rotate(35deg)}  75%{transform:rotate(35deg)} }
+  @keyframes run-armRf   { 0%,50%,100%{transform:rotate(35deg)}   25%{transform:rotate(-55deg)} 75%{transform:rotate(-55deg)} }
+  @keyframes run-faL     { 0%,100%{transform:rotate(30deg)}  50%{transform:rotate(-10deg)} }
+  @keyframes run-faR     { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(30deg)} }
+  @keyframes run-legLf   { 0%,100%{transform:rotate(-50deg)} 50%{transform:rotate(40deg)} }
+  @keyframes run-legRf   { 0%,100%{transform:rotate(40deg)}  50%{transform:rotate(-50deg)} }
+  @keyframes run-shinL   { 0%,100%{transform:rotate(40deg)}  50%{transform:rotate(-5deg)} }
+  @keyframes run-shinR   { 0%,100%{transform:rotate(-5deg)}  50%{transform:rotate(40deg)} }
+  @keyframes run-char    { 0%,100%{bottom:22px} 25%{bottom:28px} 75%{bottom:28px} }
+
+  /* push sideways */
+  @keyframes push-torso  { 0%,100%{transform:rotate(0) scaleX(0.92)}  50%{transform:rotate(0) scaleX(0.85)} }
+  @keyframes push-armLp  { 0%,100%{transform:rotate(-80deg)}  50%{transform:rotate(-95deg)} }
+  @keyframes push-armRp  { 0%,100%{transform:rotate(-80deg)}  50%{transform:rotate(-95deg)} }
+  @keyframes push-fap    { 0%,100%{transform:rotate(0deg)}    50%{transform:rotate(10deg)} }
+  @keyframes push-legLp  { 0%,100%{transform:rotate(-15deg)}  50%{transform:rotate(-20deg)} }
+  @keyframes push-legRp  { 0%,100%{transform:rotate(15deg)}   50%{transform:rotate(20deg)} }
+  @keyframes push-char   { 0%,100%{transform:translateX(-50%) scaleX(0.96)} 50%{transform:translateX(-50%) scaleX(0.90)} }
+
+  /* push up */
+  @keyframes pushtop-char  { 0%,100%{bottom:22px;transform:translateX(-50%) scaleY(0.9)} 50%{bottom:90px;transform:translateX(-50%) scaleY(0.88)} }
+  @keyframes pushtop-armL  { 0%,100%{transform:rotate(-160deg)} 50%{transform:rotate(-175deg)} }
+  @keyframes pushtop-armR  { 0%,100%{transform:rotate(160deg)}  50%{transform:rotate(175deg)} }
+  @keyframes pushtop-legL  { 0%,100%{transform:rotate(-10deg)} }
+  @keyframes pushtop-legR  { 0%,100%{transform:rotate(10deg)} }
+
+  /* jump arc */
+  @keyframes jump-char   { 0%{bottom:22px} 35%{bottom:105px} 65%{bottom:105px} 100%{bottom:22px} }
+  @keyframes jump-torso  { 0%,100%{transform:scaleY(0.85)} 50%{transform:scaleY(1.08)} }
+  @keyframes jump-armL   { 0%{transform:rotate(8deg)} 40%{transform:rotate(-130deg)} 60%{transform:rotate(-130deg)} 100%{transform:rotate(8deg)} }
+  @keyframes jump-armR   { 0%{transform:rotate(-8deg)} 40%{transform:rotate(130deg)} 60%{transform:rotate(130deg)} 100%{transform:rotate(-8deg)} }
+  @keyframes jump-legL   { 0%,100%{transform:rotate(2deg)} 40%,60%{transform:rotate(-35deg)} }
+  @keyframes jump-legR   { 0%,100%{transform:rotate(-2deg)} 40%,60%{transform:rotate(35deg)} }
+
+  /* char travel */
+  @keyframes travel-right { from{left:8%} to{left:78%} }
+  @keyframes travel-left  { from{left:78%} to{left:8%} }
+
+  /* mascot info */
+  .mascot-info-row {
+    display:flex; align-items:center; justify-content:center;
+    margin-top:6px; text-align:center;
+  }
+  .mascot-name {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:22px; font-weight:900; letter-spacing:1px; color:var(--accent);
+  }
+  .mascot-desc { font-size:12px; color:var(--text3); margin-top:2px; }
+  .mascot-progress-bar {
+    width:100%; background:var(--surface2); border-radius:20px;
+    height:7px; margin-top:12px; position:relative;
+  }
+  .mascot-progress-fill {
+    height:100%; border-radius:20px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width .8s cubic-bezier(.4,0,.2,1); position:relative;
+  }
+  .mascot-progress-fill::after {
+    content:''; position:absolute; right:-3px; top:-3px;
+    width:13px; height:13px; border-radius:50%;
+    background:var(--accent); box-shadow:0 0 8px var(--accent);
+  }
+  .mascot-progress-text {
+    font-size:11px; color:var(--text3); margin-top:8px;
+    letter-spacing:.5px; text-align:center;
+  }
+
+  /* crack fx */
+  .wall-crack {
+    position:absolute; opacity:0; font-size:22px;
+    pointer-events:none; transition:opacity .15s; z-index:5;
+  }
+  .wall-crack.l { left:4px; top:50%; transform:translateY(-50%); }
+  .wall-crack.r { right:4px; top:50%; transform:translateY(-50%); }
+  .wall-crack.t { top:4px; left:50%; transform:translateX(-50%); }
+  .wall-crack.show { opacity:1; }
+
+  /* dust */
+  .m-dust {
+    position:absolute; bottom:16px; width:8px; height:8px;
+    border-radius:50%; background:var(--text3); opacity:0;
+    pointer-events:none; transition:all .35s;
+  }
+  .m-dust.show { opacity:.4; transform:translateY(-14px) scale(2.5); }
+
+  /* PROGRESS */
   /* PROGRESS */
   .prog-tab {
     background: var(--surface2);
@@ -812,7 +1067,7 @@
   <div class="section-title">Sessione</div>
   <div class="section-sub">Seleziona il workout di oggi</div>
 
-  <div class="workout-selector">
+  <div class="workout-selector" id="workout-selector">
     <button class="workout-btn active" id="btn-A" onclick="selectWorkout('A')">
       <div class="label">A</div>
       <div class="sublabel">Full Body</div>
@@ -864,7 +1119,8 @@
 <div class="page" id="page-progress">
   <div class="section-title">Progressi</div>
   <div class="section-sub">Confronto primo vs ultimo allenamento</div>
-  <div id="progress-tabs" style="display:flex;gap:8px;margin-bottom:20px;">
+    <div id="progress-tabs"
+ style="display:flex;gap:8px;margin-bottom:20px;">
     <button class="prog-tab active" id="ptab-A" onclick="selectProgTab('A')">Full Body A</button>
     <button class="prog-tab" id="ptab-B" onclick="selectProgTab('B')">Full Body B</button>
   </div>
@@ -874,21 +1130,13 @@
 <!-- SETTINGS PAGE -->
 <div class="page" id="page-settings">
   <div class="section-title">Scheda</div>
-  <div class="section-sub">Modifica gli esercizi</div>
+  <div class="section-sub">Modifica gli esercizi e le giornate</div>
 
-  <div id="settings-a">
-    <div class="settings-section">
-      <div class="settings-title">Full Body A</div>
-      <div id="settings-list-a"></div>
-    </div>
-  </div>
+  <div id="settings-days-list"></div>
 
-  <div id="settings-b">
-    <div class="settings-section">
-      <div class="settings-title">Full Body B</div>
-      <div id="settings-list-b"></div>
-    </div>
-  </div>
+  <button class="add-session-btn" onclick="addDay()" style="margin-bottom:16px">
+    + Aggiungi giornata
+  </button>
 
   <div class="settings-section">
     <div class="settings-title">Dati</div>
@@ -981,15 +1229,19 @@ function showPage(name, btn) {
   if (name === 'history') renderHistory();
   if (name === 'checklist') renderChecklist();
   if (name === 'settings') renderSettings();
-  if (name === 'progress') renderProgress('A');
+  if (name === 'progress') { renderProgTabs(); renderProgress(Object.keys(state.exercises)[0]); }
+  else { stopSequence(); }
 }
 
 // ============ WORKOUT PAGE ============
 function selectWorkout(type) {
   state.currentWorkout = type;
   state.currentSets = {};
-  document.getElementById('btn-A').classList.toggle('active', type === 'A');
-  document.getElementById('btn-B').classList.toggle('active', type === 'B');
+  // update all workout buttons
+  Object.keys(state.exercises).forEach(t => {
+    const btn = document.getElementById('btn-' + t);
+    if (btn) btn.classList.toggle('active', t === type);
+  });
   renderExercises();
 }
 
@@ -1245,11 +1497,60 @@ function deleteHistory(idx) {
 }
 
 // ============ SETTINGS ============
-function renderSettings() {
-  ['A', 'B'].forEach(type => {
-    const container = document.getElementById(`settings-list-${type.toLowerCase()}`);
-    container.innerHTML = '';
+// Day labels map
+const DAY_LABELS = ['A','B','C','D','E','F'];
 
+function getDayName(type) {
+  return 'Full Body ' + type;
+}
+
+function renderSettings() {
+  const container = document.getElementById('settings-days-list');
+  container.innerHTML = '';
+
+  const types = Object.keys(state.exercises);
+
+  types.forEach(type => {
+    const section = document.createElement('div');
+    section.className = 'settings-section';
+    section.style.marginBottom = '16px';
+
+    // header with day name + rename + delete
+    const header = document.createElement('div');
+    header.className = 'settings-title';
+    header.style.display = 'flex';
+    header.style.alignItems = 'center';
+    header.style.justifyContent = 'space-between';
+
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = getDayName(type);
+
+    const headerBtns = document.createElement('div');
+    headerBtns.style.display = 'flex';
+    headerBtns.style.gap = '6px';
+
+    const addExBtn = document.createElement('button');
+    addExBtn.className = 'btn-small';
+    addExBtn.style.fontSize = '11px';
+    addExBtn.textContent = '+ Esercizio';
+    addExBtn.onclick = () => addExercise(type);
+
+    const delDayBtn = document.createElement('button');
+    delDayBtn.className = 'btn-small danger';
+    delDayBtn.style.fontSize = '11px';
+    delDayBtn.textContent = '✕ Giornata';
+    delDayBtn.onclick = () => deleteDay(type);
+
+    // hide delete for A and B (keep at least 2)
+    if (types.length <= 2) delDayBtn.style.display = 'none';
+
+    headerBtns.appendChild(addExBtn);
+    headerBtns.appendChild(delDayBtn);
+    header.appendChild(nameSpan);
+    header.appendChild(headerBtns);
+    section.appendChild(header);
+
+    // exercises
     state.exercises[type].forEach((ex, idx) => {
       const item = document.createElement('div');
       item.className = 'settings-item';
@@ -1258,10 +1559,68 @@ function renderSettings() {
           <div class="settings-item-name">${ex.name}</div>
           <div class="settings-item-info">${ex.sets} serie × ${ex.reps} reps</div>
         </div>
-        <button class="btn-small" onclick="openEditModal('${type}', ${idx})">Modifica</button>`;
-      container.appendChild(item);
+        <button class="btn-small" onclick="openEditModal('${type}', ${idx})">Modifica</button>
+        <button class="btn-small danger" onclick="deleteExercise('${type}', ${idx})" style="margin-left:4px">✕</button>`;
+      section.appendChild(item);
     });
+
+    container.appendChild(section);
   });
+
+  // also update workout selector buttons
+  renderWorkoutSelector();
+}
+
+function addDay() {
+  const existing = Object.keys(state.exercises);
+  const next = DAY_LABELS.find(l => !existing.includes(l));
+  if (!next) { showToast('Massimo 6 giornate!'); return; }
+
+  state.exercises[next] = [
+    { id: next.toLowerCase()+'1', name: 'Esercizio 1', sets: 3, reps: '10' },
+    { id: next.toLowerCase()+'2', name: 'Esercizio 2', sets: 3, reps: '10' },
+  ];
+  save();
+  renderSettings();
+  showToast('✓ Giornata ' + next + ' aggiunta!');
+}
+
+function deleteDay(type) {
+  const types = Object.keys(state.exercises);
+  if (types.length <= 2) { showToast('Mantieni almeno 2 giornate!'); return; }
+  if (!confirm("Eliminare la giornata " + type + " e tutti i suoi esercizi?")) return;
+  delete state.exercises[type];
+  save();
+  renderSettings();
+  showToast('Giornata ' + type + ' eliminata');
+}
+
+function addExercise(type) {
+  const exercises = state.exercises[type];
+  const newId = type.toLowerCase() + (exercises.length + 1) + Date.now();
+  exercises.push({ id: newId, name: 'Nuovo esercizio', sets: 3, reps: '10' });
+  save();
+  renderSettings();
+  // auto-open edit modal for the new exercise
+  openEditModal(type, exercises.length - 1);
+}
+
+function deleteExercise(type, idx) {
+  if (state.exercises[type].length <= 1) { showToast('Almeno 1 esercizio per giornata!'); return; }
+  state.exercises[type].splice(idx, 1);
+  save();
+  renderSettings();
+}
+
+function renderWorkoutSelector() {
+  const selector = document.getElementById('workout-selector');
+  if (!selector) return;
+  const types = Object.keys(state.exercises);
+  selector.innerHTML = types.map(t => `
+    <button class="workout-btn ${state.currentWorkout === t ? 'active' : ''}" id="btn-${t}" onclick="selectWorkout('${t}')">
+      <div class="label">${t}</div>
+      <div class="sublabel">Full Body</div>
+    </button>`).join('');
 }
 
 function openEditModal(type, idx) {
@@ -1298,14 +1657,276 @@ function resetAll() {
   }
 }
 
+// ============ MASCOT ============
+const MASCOT_STAGES = [
+  { name:'Germy',       label:'Stadio 1 — Newbie',       desc:"Appena uscito dal divano",   minXP:0,    color:'#aaa',    hairColor:'#7a4010', shirtColor:'#999', shirtDark:'#666' },
+  { name:'Germy Jr',    label:'Stadio 2 — Beginner',     desc:"Primi DOMS, prima gloria",   minXP:100,  color:'#e8ff47', hairColor:'#7a4010', shirtColor:'#e8ff47', shirtDark:'#b8cc20' },
+  { name:'Germ-Strong', label:'Stadio 3 — Intermediate', desc:"I DOMS sono diventati amici",minXP:300,  color:'#ff9f43', hairColor:'#5a2a00', shirtColor:'#ff9f43', shirtDark:'#c07010' },
+  { name:'GERMINATOR',  label:'Stadio 4 — Advanced',     desc:"La palestra è casa tua",     minXP:700,  color:'#ff6b35', hairColor:'#3a1000', shirtColor:'#ff6b35', shirtDark:'#b04010' },
+  { name:'ULTRA GERM',  label:'Stadio 5 — BEAST MODE',   desc:"Sei una leggenda vivente",   minXP:1500, color:'#e8ff47', hairColor:'#e8ff47', shirtColor:'#e8ff47', shirtDark:'#a0b000' },
+];
+
+// body part size multipliers per stage
+const STAGE_SCALE = [1, 1.06, 1.14, 1.22, 1.32];
+
+let mascotTimer = null;
+let mascotSeqIdx = 0;
+let tapCount = 0;
+
+// animation sequences: [state, duration_ms]
+const SEQUENCES = [
+  ['idle',       2400],
+  ['run-right',  1300],
+  ['push-right', 1600],
+  ['run-left',   1300],
+  ['push-left',  1600],
+  ['idle',       1600],
+  ['jump',       1100],
+  ['idle',       1200],
+  ['run-right',  1300],
+  ['push-top',   1600],
+  ['idle',       1800],
+];
+
+function g(id){ return document.getElementById(id); }
+
+function applyAnim(el, name, dur, delay, fill){
+  if(!el) return;
+  el.style.animation = name + ' ' + dur + 's ' + (delay||0) + 's ' + (fill||'ease-in-out') + ' infinite';
+}
+function clearAnim(el){
+  if(!el) return;
+  el.style.animation = '';
+}
+function setTransform(el, val){
+  if(!el) return;
+  el.style.transform = val;
+  el.style.animation = '';
+}
+
+function playAnim(state) {
+  const char   = g('m-char');
+  const torso  = g('m-torso');
+  const head   = g('m-head');
+  const armL   = g('m-armL');
+  const armR   = g('m-armR');
+  const faL    = g('m-faL');
+  const faR    = g('m-faR');
+  const legL   = g('m-legL');
+  const legR   = g('m-legR');
+  const shinL  = g('m-shinL');
+  const shinR  = g('m-shinR');
+  const box    = g('mascot-box');
+  const crackL = g('crack-l');
+  const crackR = g('crack-r');
+  const crackT = g('crack-t');
+  const dustL  = g('dust-l');
+  const dustR  = g('dust-r');
+  const shadow = g('m-shadow');
+
+  if(!char) return;
+
+  // reset everything
+  [char,torso,head,armL,armR,faL,faR,legL,legR,shinL,shinR].forEach(clearAnim);
+  box.classList.remove('shake','squish');
+  if(crackL) crackL.classList.remove('show');
+  if(crackR) crackR.classList.remove('show');
+  if(crackT) crackT.classList.remove('show');
+  if(dustL)  dustL.classList.remove('show');
+  if(dustR)  dustR.classList.remove('show');
+  char.style.left = '';
+
+  const D = 0.5; // base duration seconds
+
+  if(state === 'idle') {
+    char.style.transform = 'translateX(-50%)';
+    applyAnim(torso,'idle-torso', 2.2);
+    applyAnim(head, 'idle-head',  2.2);
+    applyAnim(armL, 'idle-armL',  2.2, 0.1);
+    applyAnim(armR, 'idle-armR',  2.2, 0.1);
+    applyAnim(legL, 'idle-legL',  2.2);
+    applyAnim(legR, 'idle-legR',  2.2);
+    if(shadow) shadow.style.width = '56px';
+
+  } else if(state === 'run-right') {
+    char.style.left = '8%';
+    char.style.transform = 'translateX(0) scaleX(1)';
+    char.style.animation = 'run-char '+D+'s ease-in-out infinite, travel-right 1.3s linear forwards';
+    applyAnim(torso,'run-torso', D, 0, 'ease-in-out');
+    applyAnim(head, 'run-head',  D, 0, 'ease-in-out');
+    applyAnim(armL, 'run-armLf', D, 0, 'ease-in-out');
+    applyAnim(armR, 'run-armRf', D, 0, 'ease-in-out');
+    applyAnim(faL,  'run-faL',   D, 0, 'ease-in-out');
+    applyAnim(faR,  'run-faR',   D, 0, 'ease-in-out');
+    applyAnim(legL, 'run-legLf', D, 0, 'ease-in-out');
+    applyAnim(legR, 'run-legRf', D, 0, 'ease-in-out');
+    applyAnim(shinL,'run-shinL', D, 0, 'ease-in-out');
+    applyAnim(shinR,'run-shinR', D, 0, 'ease-in-out');
+    if(dustL){ setTimeout(()=>dustL.classList.add('show'),100); setTimeout(()=>dustL.classList.remove('show'),500); }
+    if(shadow) shadow.style.width = '44px';
+
+  } else if(state === 'push-right') {
+    char.style.left = '70%';
+    char.style.transform = 'translateX(0) scaleX(1)';
+    char.style.animation = 'push-char 0.4s ease-in-out infinite';
+    applyAnim(torso,'push-torso', 0.4);
+    applyAnim(armL, 'push-armLp', 0.4);
+    applyAnim(armR, 'push-armRp', 0.4);
+    applyAnim(faL,  'push-fap',   0.4);
+    applyAnim(faR,  'push-fap',   0.4);
+    applyAnim(legL, 'push-legLp', 0.4);
+    applyAnim(legR, 'push-legRp', 0.4);
+    if(crackR){ crackR.textContent='💥'; crackR.classList.add('show'); }
+    if(dustR) dustR.classList.add('show');
+    box.classList.add('shake');
+    if(shadow) shadow.style.width = '40px';
+
+  } else if(state === 'run-left') {
+    char.style.left = '78%';
+    char.style.transform = 'translateX(0) scaleX(-1)';
+    char.style.animation = 'run-char '+D+'s ease-in-out infinite, travel-left 1.3s linear forwards';
+    applyAnim(torso,'run-torso', D);
+    applyAnim(head, 'run-head',  D);
+    applyAnim(armL, 'run-armRf', D);
+    applyAnim(armR, 'run-armLf', D);
+    applyAnim(faL,  'run-faR',   D);
+    applyAnim(faR,  'run-faL',   D);
+    applyAnim(legL, 'run-legRf', D);
+    applyAnim(legR, 'run-legLf', D);
+    applyAnim(shinL,'run-shinR', D);
+    applyAnim(shinR,'run-shinL', D);
+    if(dustR){ setTimeout(()=>dustR.classList.add('show'),100); setTimeout(()=>dustR.classList.remove('show'),500); }
+    if(shadow) shadow.style.width = '44px';
+
+  } else if(state === 'push-left') {
+    char.style.left = '12%';
+    char.style.transform = 'scaleX(-1)';
+    char.style.animation = 'push-char 0.4s ease-in-out infinite';
+    applyAnim(torso,'push-torso', 0.4);
+    applyAnim(armL, 'push-armLp', 0.4);
+    applyAnim(armR, 'push-armRp', 0.4);
+    applyAnim(faL,  'push-fap',   0.4);
+    applyAnim(faR,  'push-fap',   0.4);
+    applyAnim(legL, 'push-legLp', 0.4);
+    applyAnim(legR, 'push-legRp', 0.4);
+    if(crackL){ crackL.textContent='💥'; crackL.classList.add('show'); }
+    if(dustL) dustL.classList.add('show');
+    box.classList.add('shake');
+    if(shadow) shadow.style.width = '40px';
+
+  } else if(state === 'jump') {
+    char.style.transform = 'translateX(-50%)';
+    char.style.animation = 'jump-char 1.1s ease-in-out forwards';
+    applyAnim(torso,'jump-torso', 1.1, 0, 'ease-in-out');
+    applyAnim(armL, 'jump-armL',  1.1, 0, 'ease-in-out');
+    applyAnim(armR, 'jump-armR',  1.1, 0, 'ease-in-out');
+    applyAnim(legL, 'jump-legL',  1.1, 0, 'ease-in-out');
+    applyAnim(legR, 'jump-legR',  1.1, 0, 'ease-in-out');
+    if(shadow){ shadow.style.transition='width .3s,opacity .3s'; shadow.style.opacity='0.15'; shadow.style.width='30px'; }
+    setTimeout(()=>{ if(shadow){ shadow.style.opacity='1'; shadow.style.width='56px'; } }, 700);
+
+  } else if(state === 'push-top') {
+    char.style.animation = 'pushtop-char 0.5s ease-in-out infinite';
+    applyAnim(armL,'pushtop-armL', 0.5);
+    applyAnim(armR,'pushtop-armR', 0.5);
+    applyAnim(legL,'pushtop-legL', 0.5);
+    applyAnim(legR,'pushtop-legR', 0.5);
+    if(crackT){ crackT.textContent='💥'; crackT.classList.add('show'); }
+    box.classList.add('squish');
+    if(shadow) shadow.style.width = '38px';
+  }
+}
+
+function runSequence() {
+  if(mascotTimer) clearTimeout(mascotTimer);
+  const [state, dur] = SEQUENCES[mascotSeqIdx];
+  playAnim(state);
+  mascotSeqIdx = (mascotSeqIdx + 1) % SEQUENCES.length;
+  mascotTimer = setTimeout(runSequence, dur);
+}
+
+function stopSequence() {
+  if(mascotTimer) clearTimeout(mascotTimer);
+  mascotTimer = null;
+}
+
+function calcXP() {
+  const totalSessions = state.history.length;
+  const totalKg = state.history.reduce((s,h) =>
+    s + (h.exercises||[]).reduce((ss,e) => ss+(e.maxKg||0), 0), 0);
+  return Math.floor(totalSessions * 20 + totalKg * 0.5);
+}
+function getCurrentStage(xp) {
+  let st = MASCOT_STAGES[0];
+  for(let i = MASCOT_STAGES.length-1; i>=0; i--) { if(xp >= MASCOT_STAGES[i].minXP){ st=MASCOT_STAGES[i]; break; } }
+  return st;
+}
+function getNextStage(xp) {
+  for(let i=0;i<MASCOT_STAGES.length;i++) if(xp < MASCOT_STAGES[i].minXP) return MASCOT_STAGES[i];
+  return null;
+}
+
+function renderMascot() {
+  const xp    = calcXP();
+  const stage = getCurrentStage(xp);
+  const next  = getNextStage(xp);
+  const idx   = MASCOT_STAGES.indexOf(stage);
+  const sc    = STAGE_SCALE[idx];
+
+  // update colors
+  const torso = g('m-torso');
+  const hair  = g('m-hair');
+  const char  = g('m-char');
+  if(torso) torso.style.background = 'linear-gradient(160deg,'+stage.shirtColor+','+stage.shirtDark+')';
+  if(hair)  { hair.style.background = 'radial-gradient(ellipse at 50% 80%,'+stage.hairColor+',rgba(0,0,0,.5))'; }
+  if(char)  char.style.transform = 'translateX(-50%) scale('+sc+')';
+
+  // update text
+  g('mascot-name').textContent  = stage.name;
+  g('mascot-name').style.color  = stage.color;
+  g('mascot-stage-label').textContent = stage.label;
+  g('mascot-desc').textContent  = stage.desc;
+  g('mascot-xp').textContent    = xp + ' XP';
+
+  if(next) {
+    const pct = ((xp - stage.minXP) / (next.minXP - stage.minXP)) * 100;
+    g('mascot-bar').style.width = Math.min(pct,100) + '%';
+    g('mascot-prog-text').textContent = (next.minXP - xp) + ' XP al prossimo stadio (' + next.name + ')';
+  } else {
+    g('mascot-bar').style.width = '100%';
+    g('mascot-prog-text').textContent = '🌟 Stadio massimo raggiunto!';
+  }
+
+  mascotSeqIdx = 0;
+  runSequence();
+}
+
+function mascotTap() {
+  tapCount++;
+  stopSequence();
+  playAnim('jump');
+  setTimeout(() => { mascotSeqIdx = 0; runSequence(); }, 1200);
+  if(tapCount % 5 === 0) showToast('💪 Forza!');
+}
+
 // ============ PROGRESS ============
 let currentProgTab = 'A';
 
 function selectProgTab(type) {
   currentProgTab = type;
-  document.getElementById('ptab-A').classList.toggle('active', type === 'A');
-  document.getElementById('ptab-B').classList.toggle('active', type === 'B');
+  document.querySelectorAll('.prog-tab').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('ptab-' + type);
+  if (btn) btn.classList.add('active');
   renderProgress(type);
+}
+
+function renderProgTabs() {
+  const tabsEl = document.getElementById('progress-tabs');
+  if (!tabsEl) return;
+  const types = Object.keys(state.exercises);
+  tabsEl.innerHTML = types.map((t, i) =>
+    `<button class="prog-tab ${i===0?'active':''}" id="ptab-${t}" onclick="selectProgTab('${t}')">Full Body ${t}</button>`
+  ).join('');
 }
 
 function renderProgress(type) {
