@@ -1139,6 +1139,24 @@
   </button>
 
   <div class="settings-section">
+    <div class="settings-title">Backup & Ripristino</div>
+    <div class="settings-item">
+      <div>
+        <div class="settings-item-name">Esporta dati</div>
+        <div class="settings-item-info">Copia tutti i dati da trasferire</div>
+      </div>
+      <button class="btn-small" onclick="exportData()">Esporta</button>
+    </div>
+    <div class="settings-item">
+      <div>
+        <div class="settings-item-name">Importa dati</div>
+        <div class="settings-item-info">Ripristina da un backup precedente</div>
+      </div>
+      <button class="btn-small" onclick="openImportModal()">Importa</button>
+    </div>
+  </div>
+
+  <div class="settings-section">
     <div class="settings-title">Dati</div>
     <div class="settings-item">
       <div>
@@ -1174,6 +1192,24 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-title">Importa Dati</div>
+    <div class="modal-label">Incolla il codice di backup</div>
+    <textarea class="edit-field" id="import-text" rows="6"
+      style="margin-top:6px;min-height:120px;font-size:12px;font-family:monospace;resize:vertical"
+      placeholder="Incolla qui il codice esportato..."></textarea>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">
+      ⚠️ I dati attuali verranno sostituiti con quelli del backup
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeImportModal()">Annulla</button>
+      <button class="btn-primary" onclick="importData()">Ripristina</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ============ DEFAULT DATA ============
@@ -1646,6 +1682,80 @@ function saveExerciseEdit() {
   closeModal();
   renderSettings();
   showToast('✓ Esercizio aggiornato!');
+}
+
+// ============ EXPORT / IMPORT ============
+function exportData() {
+  const backup = {
+    v: 1,
+    ts: new Date().toISOString(),
+    exercises: state.exercises,
+    sessions: state.sessions,
+    history: state.history
+  };
+  const json = JSON.stringify(backup);
+  // Copy to clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(json).then(() => {
+      showToast('✓ Copiato negli appunti!');
+    }).catch(() => {
+      fallbackCopy(json);
+    });
+  } else {
+    fallbackCopy(json);
+  }
+}
+
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.select();
+  try {
+    document.execCommand('copy');
+    showToast('✓ Copiato negli appunti!');
+  } catch(e) {
+    // show the text in the import textarea so user can copy manually
+    openImportModal();
+    document.getElementById('import-text').value = text;
+    showToast('Copia manualmente il testo');
+  }
+  document.body.removeChild(el);
+}
+
+function openImportModal() {
+  document.getElementById('import-text').value = '';
+  document.getElementById('import-modal').classList.add('open');
+}
+
+function closeImportModal() {
+  document.getElementById('import-modal').classList.remove('open');
+}
+
+function importData() {
+  const raw = document.getElementById('import-text').value.trim();
+  if (!raw) { showToast('Incolla prima il codice!'); return; }
+  try {
+    const backup = JSON.parse(raw);
+    if (!backup.exercises || !backup.sessions || !backup.history) {
+      showToast('❌ Backup non valido!');
+      return;
+    }
+    if (!confirm('Sei sicuro? I dati attuali verranno sostituiti.')) return;
+    state.exercises = backup.exercises;
+    state.sessions  = backup.sessions;
+    state.history   = backup.history;
+    save();
+    closeImportModal();
+    renderSettings();
+    renderWorkoutSelector();
+    selectWorkout(Object.keys(state.exercises)[0]);
+    showToast('✓ Dati ripristinati!');
+  } catch(e) {
+    showToast('❌ Errore nel backup, riprova');
+  }
 }
 
 function resetAll() {
